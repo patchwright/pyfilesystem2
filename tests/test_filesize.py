@@ -45,6 +45,21 @@ class TestFilesize(unittest.TestCase):
 
         self.assertEqual(filesize.decimal(1200 * 1000), "1.2 MB")
 
+    def test_rollover_decimal(self):
+        # Mantissa rounds up to base — must carry to the next suffix
+        self.assertEqual(filesize.decimal(999_999), "1.0 MB")
+        self.assertEqual(filesize.decimal(999_999_999), "1.0 GB")
+        self.assertEqual(filesize.decimal(999_999_999_999), "1.0 TB")
+
+    def test_rollover_traditional(self):
+        # 1024**2 - 1 bytes is 1023.999 KB, which rounds to 1,024.0 KB
+        self.assertEqual(filesize.traditional(1024**2 - 1), "1.0 MB")
+        self.assertEqual(filesize.traditional(1024**3 - 1), "1.0 GB")
+
+    def test_rollover_binary(self):
+        self.assertEqual(filesize.binary(1024**2 - 1), "1.0 MiB")
+        self.assertEqual(filesize.binary(1024**3 - 1), "1.0 GiB")
+
     def test_errors(self):
 
         with self.assertRaises(TypeError):
