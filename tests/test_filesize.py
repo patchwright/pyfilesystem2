@@ -60,6 +60,15 @@ class TestFilesize(unittest.TestCase):
         self.assertEqual(filesize.binary(1024**2 - 1), "1.0 MiB")
         self.assertEqual(filesize.binary(1024**3 - 1), "1.0 GiB")
 
+    def test_rounding_boundaries(self):
+        # Within-unit rounding boundaries (no suffix change), per review on #600
+        self.assertEqual(filesize.traditional(1996), "1.9 KB")
+        self.assertEqual(filesize.traditional(1997), "2.0 KB")
+        self.assertEqual(filesize.decimal(1950), "1.9 kB")
+        self.assertEqual(filesize.decimal(1951), "2.0 kB")
+        self.assertEqual(filesize.binary(1996), "1.9 KiB")
+        self.assertEqual(filesize.binary(1997), "2.0 KiB")
+
     def test_errors(self):
 
         with self.assertRaises(TypeError):
